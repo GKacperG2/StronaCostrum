@@ -7,8 +7,50 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
-  const [volume, setVolume] = useState(0.3);
+  const [volume, setVolume] = useState(0.5); // Początkowa głośność 50%
   const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  // Michał - autoplay na starcie z fade-out
+  useEffect(() => {
+    // Kacper - uruchom muzykę automatycznie po załadowaniu
+    const playAudio = async () => {
+      if (audioRef.current) {
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+          
+          // Michał - poczekaj 10 sekund, potem zacznij stopniowe ściszanie
+          setTimeout(() => {
+            // Kacper - fade out przez 30 sekund z 50% do 10%
+            const startVolume = 0.5;
+            const endVolume = 0.1;
+            const duration = 30000; // 30 sekund
+            const steps = 100;
+            const stepTime = duration / steps;
+            const volumeStep = (startVolume - endVolume) / steps;
+            
+            let currentStep = 0;
+            const fadeInterval = setInterval(() => {
+              currentStep++;
+              const newVolume = startVolume - (volumeStep * currentStep);
+              
+              if (currentStep >= steps || newVolume <= endVolume) {
+                setVolume(endVolume);
+                clearInterval(fadeInterval);
+              } else {
+                setVolume(newVolume);
+              }
+            }, stepTime);
+          }, 10000); // Czekaj 10 sekund przed rozpoczęciem fade-out
+        } catch (error) {
+          // Kacper - autoplay może być zablokowany przez przeglądarkę
+          console.log('Autoplay zablokowany - użytkownik musi kliknąć przycisk');
+        }
+      }
+    };
+    
+    playAudio();
+  }, []);
 
   // Michał - toggle play/pause
   const togglePlay = () => {
@@ -31,11 +73,11 @@ export default function AudioPlayer() {
 
   return (
     <>
-      {/* Michał - free space ambient sound z YouTube */}
+      {/* Michał - free space ambient sound - automatyczne uruchomienie */}
       <audio
         ref={audioRef}
         loop
-        preload="none"
+        preload="auto"
       >
         {/* Kacper - fallback do local file jesli bedzie */}
         <source src="/audio/space-ambient.mp3" type="audio/mpeg" />
