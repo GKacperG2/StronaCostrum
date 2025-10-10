@@ -331,7 +331,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-6xl font-bold mb-12 text-center text-gradient">
+            <h2 className="text-6xl font-bold mb-12 text-center text-gradient overflow-visible" style={{ lineHeight: '1.4', padding: '0.2em 0' }}>
               Dlaczego to robimy
             </h2>
 
@@ -427,7 +427,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-6xl font-bold mb-12 text-center text-gradient">
+            <h2 className="text-6xl font-bold mb-12 text-center text-gradient overflow-visible" style={{ lineHeight: '1.4', padding: '0.2em 0' }}>
               Dlaczego teraz
             </h2>
 
@@ -636,7 +636,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-6xl font-bold mb-12 text-center text-gradient">
+            <h2 className="text-6xl font-bold mb-12 text-center text-gradient overflow-visible" style={{ lineHeight: '1.4', padding: '0.2em 0' }}>
               Długoterminowa Wizja
             </h2>
 

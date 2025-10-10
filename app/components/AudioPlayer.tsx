@@ -1,56 +1,60 @@
 'use client';
 
 // Kacper - ambient sound player w stylu Interstellar
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { Volume2, VolumeX } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AudioPlayer() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [volume, setVolume] = useState(0.5); // Początkowa głośność 50%
+  const [showSplash, setShowSplash] = useState(true); // Kacper - splash screen dla autoplay
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const hasStartedRef = useRef(false); // Kacper - zapobiega wielokrotnemu uruchomieniu
 
-  // Michał - autoplay na starcie z fade-out
-  useEffect(() => {
-    // Kacper - uruchom muzykę automatycznie po załadowaniu
-    const playAudio = async () => {
-      if (audioRef.current) {
-        try {
-          await audioRef.current.play();
-          setIsPlaying(true);
+  // Michał - funkcja uruchamiająca muzykę z fade-out
+  const startAudioWithFadeOut = useCallback(async () => {
+    if (audioRef.current && !hasStartedRef.current) {
+      hasStartedRef.current = true;
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+        setShowSplash(false); // Kacper - ukryj splash gdy muzyka gra
+        
+        // Michał - poczekaj 10 sekund, potem zacznij stopniowe ściszanie
+        setTimeout(() => {
+          // Kacper - fade out przez 30 sekund z 50% do 10%
+          const startVolume = 0.5;
+          const endVolume = 0.1;
+          const duration = 30000; // 30 sekund
+          const steps = 100;
+          const stepTime = duration / steps;
+          const volumeStep = (startVolume - endVolume) / steps;
           
-          // Michał - poczekaj 10 sekund, potem zacznij stopniowe ściszanie
-          setTimeout(() => {
-            // Kacper - fade out przez 30 sekund z 50% do 10%
-            const startVolume = 0.5;
-            const endVolume = 0.1;
-            const duration = 30000; // 30 sekund
-            const steps = 100;
-            const stepTime = duration / steps;
-            const volumeStep = (startVolume - endVolume) / steps;
+          let currentStep = 0;
+          const fadeInterval = setInterval(() => {
+            currentStep++;
+            const newVolume = startVolume - (volumeStep * currentStep);
             
-            let currentStep = 0;
-            const fadeInterval = setInterval(() => {
-              currentStep++;
-              const newVolume = startVolume - (volumeStep * currentStep);
-              
-              if (currentStep >= steps || newVolume <= endVolume) {
-                setVolume(endVolume);
-                clearInterval(fadeInterval);
-              } else {
-                setVolume(newVolume);
-              }
-            }, stepTime);
-          }, 10000); // Czekaj 10 sekund przed rozpoczęciem fade-out
-        } catch (error) {
-          // Kacper - autoplay może być zablokowany przez przeglądarkę
-          console.log('Autoplay zablokowany - użytkownik musi kliknąć przycisk');
-        }
+            if (currentStep >= steps || newVolume <= endVolume) {
+              setVolume(endVolume);
+              clearInterval(fadeInterval);
+            } else {
+              setVolume(newVolume);
+            }
+          }, stepTime);
+        }, 10000); // Czekaj 10 sekund przed rozpoczęciem fade-out
+      } catch (error) {
+        // Kacper - autoplay zablokowany
+        hasStartedRef.current = false;
       }
-    };
-    
-    playAudio();
+    }
   }, []);
+
+  // Kacper - obsługa kliknięcia splash screen
+  const handleSplashClick = () => {
+    startAudioWithFadeOut();
+  };
 
   // Michał - toggle play/pause
   const togglePlay = () => {
@@ -82,6 +86,52 @@ export default function AudioPlayer() {
         {/* Kacper - fallback do local file jesli bedzie */}
         <source src="/audio/space-ambient.mp3" type="audio/mpeg" />
       </audio>
+
+      {/* Kacper - subtelny splash screen dla autoplay */}
+      <AnimatePresence>
+        {showSplash && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 z-[100] bg-black/50 backdrop-blur-sm flex items-center justify-center cursor-pointer"
+            onClick={handleSplashClick}
+          >
+            <motion.div
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2, duration: 0.5 }}
+              className="text-center"
+            >
+              <motion.div
+                animate={{ 
+                  scale: [1, 1.1, 1],
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 2,
+                }}
+                className="text-white text-xl md:text-3xl font-light mb-4"
+              >
+                Kliknij aby rozpocząć podróż
+              </motion.div>
+              <motion.div
+                animate={{ 
+                  opacity: [0.5, 1, 0.5],
+                }}
+                transition={{ 
+                  repeat: Infinity, 
+                  duration: 2,
+                }}
+                className="text-orange-500 text-sm"
+              >
+                🎵 Muzyka uruchomi się automatycznie
+              </motion.div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Kacper - floating audio controls */}
       <motion.div
