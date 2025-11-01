@@ -10,7 +10,18 @@
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.0-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-12.0-ff69b4?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 
-[View Demo](#) · [Report Bug](#) · [Documentation](INSTRUKCJA.md)
+<br/>
+
+## 🌟 [**🚀 VIEW LIVE DEMO →**](https://stronacostrum.netlify.app/) 🌟
+
+[![Live Demo](https://img.shields.io/badge/🌐_LIVE_WEBSITE-Visit_Now-ff6b35?style=for-the-badge&logoColor=white)](https://stronacostrum.netlify.app/)
+[![Netlify Status](https://img.shields.io/badge/Deployed_on-Netlify-00C7B7?style=for-the-badge&logo=netlify&logoColor=white)](https://stronacostrum.netlify.app/)
+
+**Experience the full interactive website with 3D animations, video backgrounds, and particle effects!**
+
+<br/>
+
+[📖 Documentation](INSTRUKCJA.md) · [🐛 Report Bug](#) · [✨ Request Feature](#)
 
 ---
 
